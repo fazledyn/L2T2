@@ -5,6 +5,8 @@
 #include <fstream>
 using namespace std;
 
+#define INF 99999999
+
 
 class Graph {
 
@@ -45,7 +47,7 @@ class Graph {
               priority_queue<int, vector<int>, greater<int>> queue;
 
               for (int i=0; i<nVertices; i++){
-                     dist[i] = INT_MAX;
+                     dist[i] = INF;
                      visited[i] = false;
                      queue.push(i);
               }
@@ -54,6 +56,8 @@ class Graph {
               while (!queue.empty()){
                      u = queue.top();
                      queue.pop();
+
+                     cout << u << endl;
                      visited[u] = true;
                      
                      int v, w;
@@ -62,23 +66,23 @@ class Graph {
                             w = adjList[u].at(i).second;
 
                             if (dist[v] > dist[u] + w){
+                                   cout << "went in" << endl;
                                    dist[v] = dist[u] + w;
                             }
                      }
               }
-              if (dist[des] != INT_MAX){
+              if (dist[des] != INF){
                      cout << "Distance of " << src << " -> " << des << ": " << dist[des] << endl;
               } else {
                      cout << src << " -> " << des << endl;
                      cout << "There's no shortest path" << endl;
               }
-              
        }
 
        void BellmanFord(int src, int des){
               cout << "Bellman Ford Algorithm :" << endl;
               for (int i=0; i<nVertices; i++){
-                     dist[i] = INT_MAX;
+                     dist[i] = INF;
               }
               dist[src] = 0;
               int v, w;
@@ -108,7 +112,7 @@ class Graph {
                      }
               }
 
-              if (dist[des] != INT_MAX){
+              if (dist[des] != INF){
                      cout << "Distance of " << src << " -> " << des << ": " << dist[des] << endl;
               } else {
                      cout << src << " -> " << des << endl;
