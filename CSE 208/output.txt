@@ -1,0 +1,7 @@
+Bellman Ford Algorithm:
+1140
+0 -> 7 -> 1 -> 6 -> 4 -> 8 -> 2 -> 5
+ 
+Dijkstra Algorithm:
+1580
+0 -> 7 -> 1 -> 6 -> 4 -> 8 -> 2 -> 5
