@@ -1,3 +1,5 @@
+package Offline3;
+
 public class Edge {
        int u, v;
        double weight;

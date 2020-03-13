@@ -1,3 +1,5 @@
+package Offline3;
+
 import java.util.Scanner;
 
 public class Offline3 {
