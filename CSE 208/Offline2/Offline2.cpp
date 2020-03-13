@@ -69,7 +69,7 @@ class Graph {
 
               while (!queue.empty()){
                      u = queue.top();
-                     queue.pop();
+                     queue.pop(); 
                      
                      visited[u] = true;  
                      int v, w;

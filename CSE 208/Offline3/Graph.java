@@ -1,35 +1,44 @@
 package Offline3;
-
+import java.util.Collections;
+import java.util.PriorityQueue;
 import java.util.Vector;
+
 import java.lang.Math;
+
 
 public class Graph {
 
        public static double INFINITY = 999999999;
-       int nVertices, nEdges;
+       public int nVertices, nEdges;
 
        int[][] parentMatrix;
        double[][] distanceMatrix;
 
        double[] distance;
+       boolean[] visited;
        int[] parent;
 
        Vector<Edge> adjList;
+
+       public Graph(){
+              //..
+       }
 
        public void setnVertices(int n){
               nVertices = n;
               parent = new int[nVertices];
               distance = new double[nVertices];
               adjList = new Vector<Edge>(nVertices);
+              visited = new boolean[nVertices];
               parentMatrix = new int[nVertices][nVertices];
               distanceMatrix = new double[nVertices][nVertices];
        }
 
        private int findEdge(int u, int v) {
               int edgeIndex = -1;
-              for (int i=0; i<nEdges; i++) {
+              for (int i=0; i < nEdges; i++) {
                      Edge edge = adjList.elementAt(i);
-                     if ((edge.u == u) && (edge.v == v)) {
+                     if ((edge.getU() == u) && (edge.getV() == v)) {
                             edgeIndex = i;
                             break;
                      }
@@ -38,9 +47,9 @@ public class Graph {
        }
 
        public Boolean addEdge(int u, int v, double w){
-              for (int i=0; i<nEdges; i++) {
+              for (int i=0; i < nEdges; i++) {
                      Edge edge = adjList.elementAt(i);
-                     if ((edge.u == u) && (edge.v == v)){
+                     if ((edge.getU() == u) && (edge.getV() == v)){
                             return false;
                      }
               }
@@ -77,7 +86,7 @@ public class Graph {
               }
        }
 
-       public Boolean isEdge (int u, int v) {
+       public boolean isEdge (int u, int v) {
               int index = findEdge(u, v);
               if (index == -1) {
                      return false;
@@ -101,10 +110,27 @@ public class Graph {
                      System.out.print(i + ": ");
                      for (int j=0; j<adjList.size(); j++) {
                             if (adjList.elementAt(j).getU() == i) {
-                                   System.out.print(adjList.elementAt(i).getV() + " ");
+                                   System.out.print(adjList.elementAt(j).getV() + " ");
                             }
                      }
-                     System.out.print("/n");
+                     System.out.print("\n");
+              }
+       }
+
+       public double getShortestPathWeight(int u, int v) {
+              if (this.bellmanFord(u)) {
+                     return distanceMatrix[u][v];
+              } else {
+                     return INFINITY;
+              }
+       }
+
+       public void printShortestPath(int u, int v) {
+              if (v > 0) {
+                     printShortestPath(u, parent[v]);
+                     System.out.print(v);
+              } else if (v == u) {
+                     System.out.print(v);
               }
        }
 
@@ -145,24 +171,35 @@ public class Graph {
 
        public void floydWarshall() {
               // assuming no negative weight cycle
+
+              for (int i=0; i < nVertices; i++) {
+                     for (int j=0; j < nVertices; j++) {
+                            if (i == j) {
+                                   distanceMatrix[i][j] = 0;
+                            } else {
+                                   distanceMatrix[i][j] = INFINITY;
+                            }
+                     }
+              }
+
               for (int k=0; k < nVertices; k++) {
                      for (int i=0; i < nVertices; i++) {
                             for (int j=0; j < nVertices; j++) {
-                                   // distance counting
-                                   distanceMatrix[i][j] = Math.min(distanceMatrix[i][j], distanceMatrix[i][k] + distanceMatrix[k][j]);
-                                   // parent storing
+
+                                   this.distanceMatrix[i][j] = Math.min(this.distanceMatrix[i][j], this.distanceMatrix[i][k] + this.distanceMatrix[k][j]);
+                                   
                                    if ((i==j) || (getWeight(i, j)==INFINITY)) {
-                                          parentMatrix[i][j] = -1;
-                                   } else if ((i != j) && (getWeight(i, j) < INFINITY)){
-                                          parentMatrix[i][j] = i;
+                                          this.parentMatrix[i][j] = -1;
+                                   } else if ((i != j) && (this.getWeight(i, j) < INFINITY)){
+                                          this.parentMatrix[i][j] = i;
                                    }
                             }
                      }
               }
        }
 
-       public Boolean bellmanFord(int src) {
-              for (int i=0; i<nVertices; i++) {
+       public boolean bellmanFord(int src) {
+              for (int i=0; i < nVertices; i++) {
                      parent[i] = -1;
                      distance[i] = INFINITY;
               }
@@ -195,7 +232,81 @@ public class Graph {
 
        public void Dijkstra(int src) {
 
+              PriorityQueue<Integer> queue = new PriorityQueue<Integer>(Collections.reverseOrder());
+              for (int i=0; i<nVertices; i++) {
+                     distance[i] = INFINITY;
+                     visited[i] = false;
+                     parent[i] = -1;
+              }
+              queue.add(src);
+              distance[src] = 0;
+
+              int u;
+              while (!queue.isEmpty()) {
+                     u = queue.remove();
+                     visited[u] = true;
+                     double w;
+
+                     for (int v=0; v<nVertices; v++) {
+                            int index = findEdge(u, v);
+                            if (index != -1) {
+                                   w = Math.abs(adjList.elementAt(index).getWeight());
+                                   if (distance[v] > distance[u] + w) {
+                                          distance[v] = distance[u] + w;
+                                          parent[v] = u;
+                                          queue.add(v);
+                                   }
+                            }
+                     }
+              }
        }
 
+       public void johnsonsAlgo() {
+              Graph gr = new Graph();
+              gr.setnVertices(this.nVertices + 1);
+              gr.adjList = this.adjList;
 
+              for (int i=0; i < this.nVertices; i++) {
+                     for (int j=0; j < this.nVertices; j++) {
+                            gr.parentMatrix[i][j] = this.parentMatrix[i][j];
+                            gr.distanceMatrix[i][j] = this.distanceMatrix[i][j];
+                     }
+                     gr.parent[i] = this.parent[i];
+                     gr.visited[i] = this.visited[i];
+                     gr.distance[i] = this.distance[i];
+              }
+
+              int src = this.nVertices;
+              for (int i=0; i < nVertices; i++) {
+                     gr.addEdge(src, i, 0);
+              }
+
+              if (gr.bellmanFord(src) == false) {
+                     System.out.println("There is a negative-weight cycle.");
+                     return;
+              } 
+              else {
+                     for (int i=0; i < gr.nVertices; i++) {
+                            gr.distance[i] = gr.distanceMatrix[src][i];
+                     }
+
+                     for (int i=0; i < adjList.size(); i++) {
+                            int u = adjList.elementAt(i).getU();
+                            int v = adjList.elementAt(i).getV();
+
+                            if ((u != nVertices) && (v != nVertices)) {  
+                                   reweightEdge(u, v, getWeight(u, v) + distance[u] - distance[v]);
+                            }
+                     }
+                     double[][] newDMatrix = new double[nVertices][nVertices];
+
+                     for (int i=0; i<nVertices; i++) {
+                            this.Dijkstra(i);
+                            for (int j=0; j<nVertices; j++) {
+                                   newDMatrix[i][j] = distanceMatrix[i][j] + distance[j] - distance[i];
+                            }
+                     }
+                     //return newDMatrix;
+              }
+       }
 }
