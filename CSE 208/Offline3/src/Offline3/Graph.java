@@ -12,7 +12,7 @@ public class Graph {
        public int nVertices, nEdges;
 
        int[][] parentMatrix;
-       double[][] distanceMatrix;
+       double[][] dist;
 
        double[] distance;
        boolean[] visited;
@@ -25,13 +25,13 @@ public class Graph {
        }
 
        public void setnVertices(int n){
-              nVertices = n;
+              nVertices = n + 1;
               parent = new int[nVertices];
               distance = new double[nVertices];
               adjList = new Vector<Edge>(nVertices);
               visited = new boolean[nVertices];
               parentMatrix = new int[nVertices][nVertices];
-              distanceMatrix = new double[nVertices][nVertices];
+              dist = new double[nVertices][nVertices];
        }
 
        private int findEdge(int u, int v) {
@@ -119,7 +119,7 @@ public class Graph {
 
        public double getShortestPathWeight(int u, int v) {
               if (this.bellmanFord(u)) {
-                     return distanceMatrix[u][v];
+                     return dist[u][v];
               } else {
                      return INFINITY;
               }
@@ -137,19 +137,19 @@ public class Graph {
        public void cleanSPInfo(){
               for (int i=0; i < nVertices; i++) {
                      for (int j=0; j < nVertices; j++) {
-                            distanceMatrix[i][j] = INFINITY;
+                            dist[i][j] = INFINITY;
                             parentMatrix[i][j] = -1;
                      }
               }
        }
 
-       public void printDistanceMatrix(){
+       public void printdist(){
               for (int i=0; i < nVertices; i++) {
                      for (int j=0; j < nVertices; j++) {
-                            if (distanceMatrix[i][j] == INFINITY) {
+                            if (dist[i][j] == INFINITY) {
                                    System.out.print("INF ");
                             } else {
-                                   System.out.print(distanceMatrix[i][j] + " ");
+                                   System.out.print(dist[i][j] + " ");
                             }
                      }
                      System.out.println("");
@@ -175,9 +175,9 @@ public class Graph {
               for (int i=0; i < nVertices; i++) {
                      for (int j=0; j < nVertices; j++) {
                             if (i == j) {
-                                   distanceMatrix[i][j] = 0;
+                                   dist[i][j] = 0;
                             } else {
-                                   distanceMatrix[i][j] = INFINITY;
+                                   dist[i][j] = INFINITY;
                             }
                      }
               }
@@ -185,8 +185,8 @@ public class Graph {
               for (int k=0; k < nVertices; k++) {
                      for (int i=0; i < nVertices; i++) {
                             for (int j=0; j < nVertices; j++) {
-
-                                   this.distanceMatrix[i][j] = Math.min(this.distanceMatrix[i][j], this.distanceMatrix[i][k] + this.distanceMatrix[k][j]);
+                                   
+                                   this.dist[i][j] = Math.min(this.dist[i][j], this.dist[i][k] + this.dist[k][j]);
                                    
                                    if ((i==j) || (getWeight(i, j)==INFINITY)) {
                                           this.parentMatrix[i][j] = -1;
@@ -269,7 +269,7 @@ public class Graph {
               for (int i=0; i < this.nVertices; i++) {
                      for (int j=0; j < this.nVertices; j++) {
                             gr.parentMatrix[i][j] = this.parentMatrix[i][j];
-                            gr.distanceMatrix[i][j] = this.distanceMatrix[i][j];
+                            gr.dist[i][j] = this.dist[i][j];
                      }
                      gr.parent[i] = this.parent[i];
                      gr.visited[i] = this.visited[i];
@@ -287,7 +287,7 @@ public class Graph {
               } 
               else {
                      for (int i=0; i < gr.nVertices; i++) {
-                            gr.distance[i] = gr.distanceMatrix[src][i];
+                            gr.distance[i] = gr.dist[src][i];
                      }
 
                      for (int i=0; i < adjList.size(); i++) {
@@ -303,7 +303,7 @@ public class Graph {
                      for (int i=0; i<nVertices; i++) {
                             this.Dijkstra(i);
                             for (int j=0; j<nVertices; j++) {
-                                   newDMatrix[i][j] = distanceMatrix[i][j] + distance[j] - distance[i];
+                                   newDMatrix[i][j] = dist[i][j] + distance[j] - distance[i];
                             }
                      }
                      //return newDMatrix;

@@ -1,0 +1,11 @@
+Kruskal's Algorithm:
+Total weight = 10
+0 1
+0 2
+
+Prim-Jarnik Algorithm: 
+Total weight = 10
+Root node = 0
+0 1
+0 2
+

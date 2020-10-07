@@ -54,7 +54,7 @@ class Graph {
               }
        }
 
-       void DijkstraAlgorithm(FILE *fp, int src, int des){
+       void DijkstraAlgorithm(FILE *fp, int src , int des){
               int u;
               priority_queue<int, vector<int>, greater<int>> queue;
 

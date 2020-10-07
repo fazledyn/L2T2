@@ -7,7 +7,7 @@
 using namespace std;
 
 #define INF 999999999
-#define MAX 100
+#define MAX 1000000
 typedef pair<int, int> pii;
 
 
@@ -38,7 +38,7 @@ bool compareEdge(Edge first, Edge second) {
 
 class DisjointSet {
 
-    Node node[MAX];
+    Node *node;
     int totalSize = 0;
 
     void Link(int x, int y) {
@@ -55,6 +55,9 @@ class DisjointSet {
     }
 
 public:
+    DisjointSet(int init_size) {
+        node = new Node[init_size + 5];
+    }
 
     void makeSet(int x) {
         node[x].parent = x;
@@ -128,7 +131,7 @@ public:
 
     void kruskalMST() {
 
-        DisjointSet set;
+        DisjointSet set(nVertices);
         int totalWeight = 0;
 
         for (int i=0; i < nVertices; i++) {
@@ -187,6 +190,7 @@ public:
         visited[root] = true;
 
         priority_queue <pii, vector<pii>, greater<pii> > pq;
+
         for (int i=0; i < adjList[root].size(); i++) {
             int weight = adjList[root].at(i).second;
             int node = adjList[root].at(i).first;
