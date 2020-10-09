@@ -29,19 +29,9 @@ class Graph {
         }
     }
 
-
     void addEdge(int u, int v, int c) {
         adjList[u].push_back(v);
         capacity[u][v] = c;
-    }
-
-    void print() {
-        for (int i=0; i < nVertices; i++) {
-            for (int j=0; j < adjList[i].size(); j++) {
-                int v = adjList[i].at(j);
-                cout << i << " " << v << " " << capacity[i][v] << endl; 
-            }
-        }
     }
 
     void printMatching(Graph res, int source, int sink) {

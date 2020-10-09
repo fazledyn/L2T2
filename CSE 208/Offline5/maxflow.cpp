@@ -1,7 +1,6 @@
 #include <iostream>
 #include <queue>
 #include <vector>
-
 using namespace std;
 
 class Graph {
@@ -28,15 +27,6 @@ class Graph {
         capacity[u][v] = c;
     }
 
-    void print() {
-        for (int i=0; i < nVertices; i++) {
-            for (int j=0; j < adjList[i].size(); j++) {
-                int v = adjList[i].at(j);
-                cout << i << " " << v << " " << capacity[i][v] << endl; 
-            }
-        }
-    }
-
     bool bfs(int source, int sink) {
         bool visited[nVertices];
 
@@ -47,7 +37,6 @@ class Graph {
 
         queue<int> q;
         q.push(source);        
-        //parent[source] = -2;
         visited[source] = true;
 
         while (!q.empty()) {
@@ -108,17 +97,7 @@ class Graph {
                 cout << i << " " << v << " " << capacity[i][v] - res.capacity[i][v] << "/" << capacity[i][v] << endl; 
             }
         }
-        //return maxFlow;
-    }
-        
-    void printFlow(Graph res) {
-        for (int i=0; i < nVertices; i++) {
-            for (int j=0; j < adjList[i].size(); j++) {
-                int v = adjList[i].at(j);
-                cout << i << " " << v << " " << capacity[i][v] - res.capacity[i][v] << endl; 
-            }
-        }
-    }
+    }        
 };
 
 int main() {
@@ -136,6 +115,5 @@ int main() {
     }
     int s, t;
     cin >> s >> t;
-
     g.fordFulkerson(s, t);
 }
