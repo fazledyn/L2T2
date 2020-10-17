@@ -245,7 +245,7 @@ class RBT {
     }
 
     void Print(Node *x) {
-        
+
         if (x != nil) {
             cout << x->key << ":";
             if (x->color == BLACK)  cout << "b";
@@ -289,6 +289,8 @@ class RBT {
     bool Search(Node* node, int data) {
         bool found = false;
         //cout << "key: " << node->key << endl;
+        if (node == nil)
+            return found;
 
         if (node->key == data) 
             found = true;
@@ -313,65 +315,34 @@ class RBT {
 
 
 int main() {
+    freopen("input.txt", "r", stdin);
+    freopen("output.txt", "w", stdout);
+
     RBT rbt;
+    char choice;
+    int value;
     Node* x;
 
-    cout << "started\n";
+    while (cin >> choice >> value) {
 
-    x = new Node;
-    x->key = 1;
-    x->color = BLACK;
-    rbt.Insert(x);
-    
-    x = new Node;
-    x->key = 3;
-    x->color = BLACK;
-    rbt.Insert(x);
-
-    x = new Node;
-    x->key = 2;
-    x->color = BLACK;
-    rbt.Insert(x);
-    
-    x = new Node;
-    x->key = 5;
-    x->color = BLACK;
-    rbt.Insert(x);
-
-    x = new Node;
-    x->key = 7;
-    x->color = BLACK;
-    rbt.Insert(x);
-    
-    x = new Node;
-    x->key = 4;
-    x->color = BLACK;
-    rbt.Insert(x);
-
-    // 2:b(1:b)(5:r(3:b()(4:r))(7:b))
-    // insert, search, delete works
-
-    cout << "ended\n";
-    if (rbt.Search(rbt.getRoot(), 10))
-        cout << "found\n";
-    else
-        cout << "not found\n";
-
-
-    if (rbt.Search(rbt.getRoot(), 5))
-        cout << "found\n";
-    else 
-        cout << "not found\n";
-
-    rbt.Print(rbt.getRoot());
-
+        if (choice == 'I') {
+            x = new Node;
+            x->key = value;
+            x->color = BLACK;
+            rbt.Insert(x);
+            rbt.Print(rbt.getRoot());
+        }
+        if (choice == 'D') {
+            rbt.Delete(rbt.getRoot(), value);
+            rbt.Print(rbt.getRoot());
+        }
+        if (choice == 'F') {
+            if (rbt.Search(rbt.getRoot(), value))
+                cout << "True";
+            else
+                cout << "False";
+        }
+        cout << endl;
+    }
+    return 0;
 }
-
-
-
-
-
-
-
-
-
