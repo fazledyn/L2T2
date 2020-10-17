@@ -12,39 +12,8 @@ class Node {
 };
 
 class RBT {
-    public:
+
     Node *root, *nil;
-
-    RBT() {
-        nil = new Node;
-        root = new Node;
-
-        nil->color = BLACK;
-        nil->key = NIL_KEY;
-        root = nil;
-    }
-
-    void Print(Node *x) {
-        // 2:b(1:b)(5:r(3:b()(4:r))(7:b))
-        if (x != nil) {
-            if (x == root) {
-                cout << x->key << ":";
-                if (x->color == RED) cout << "r";
-                else cout << "b";    
-            }
-            else {
-                cout << "(";
-                if (x != nil) { 
-                    cout << x->key << ":";
-                    if (x->color == RED) cout << "r";
-                    else cout << "b";
-                }
-                cout << ")";
-            }
-            Print(x->left);
-            Print(x->right);
-        }
-    }
 
     void LeftRotate(Node* x) {
         Node *y = x->right;
@@ -64,7 +33,6 @@ class RBT {
         y->left = x;
         x->parent = y;
     }
-
     
     void RightRotate(Node* x) {
         Node *y = x->left;
@@ -83,31 +51,6 @@ class RBT {
         
         y->right = x;
         x->parent = y;
-    }
-
-    void Insert(Node *z) {
-        Node *y = nil;
-        Node *x = root;
-
-        while (x != nil) {
-            y = x;
-            if (z->key < x->key)
-                x = x->left;
-            else
-                x = x->right;
-        }
-        z->parent = y;
-        if (y == nil) 
-            root = z;
-        else if (z->key < y->key)
-            y->left = z;
-        else 
-            y->right = z;
-        
-        z->left = nil;
-        z->right = nil;
-        z->color = RED;
-        InsertFixup(z);
     }
 
     void InsertFixup(Node* z) {
@@ -155,13 +98,13 @@ class RBT {
         root->color = BLACK;
     }
 
-    Node* Delete(Node* z) {
+    Node* DeleteNode(Node* z) {
         Node *y;
         if ((z->left == nil) || (z->right == nil)) {
             y = z;
         }
         else {
-            y = TreeSuccessor(z);
+            y = Successor(z);
         }
 
         Node *x;
@@ -253,11 +196,94 @@ class RBT {
         x->color = BLACK;
     }
 
-    Node* TreeSuccessor(Node *node) {
-        while (node->left != nil) {
-            node = node->left;
+    Node* Minimum(Node* x) {
+        while (x->left != nil) {
+            x = x->left;
         }
-        return node;
+        return x;
+    }
+
+    Node* Successor(Node* x) {
+        if (x->right != nil) {
+            return Minimum(x->right);
+        }
+        Node *y = x->parent;
+        while ((y != nil) && (x == y->right)) {
+            x = y;
+            y = y->parent;
+        }
+        return y;
+    }
+
+    Node* SearchForDelete(Node* node, int data) {
+        if (node->key == data){
+            return node;
+        } 
+        else if (node->key > data) {
+            if (node->left != nil)
+                return SearchForDelete(node->left, data);
+        }
+        else {
+            if (node->right != nil)
+                return SearchForDelete(node->right, data);
+        }
+        return nullptr;
+    }
+
+    public:
+    RBT() {
+        nil = new Node;
+        root = new Node;
+
+        nil->color = BLACK;
+        nil->key = NIL_KEY;
+        root = nil;
+    }
+
+    Node* getRoot(){
+        return root;
+    }
+
+    void Print(Node *x) {
+        
+        if (x != nil) {
+            cout << x->key << ":";
+            if (x->color == BLACK)  cout << "b";
+            else                    cout << "r";
+
+            if ((x->left != nil) || (x->right != nil)) {    
+                cout << "(";
+                Print(x->left);
+                cout << ")" << "(";
+                Print(x->right);
+                cout << ")";
+            }
+        }
+    }
+
+    void Insert(Node *z) {
+        Node *y = nil;
+        Node *x = root;
+
+        while (x != nil) {
+            y = x;
+            if (z->key < x->key)
+                x = x->left;
+            else
+                x = x->right;
+        }
+        z->parent = y;
+        if (y == nil) 
+            root = z;
+        else if (z->key < y->key)
+            y->left = z;
+        else 
+            y->right = z;
+        
+        z->left = nil;
+        z->right = nil;
+        z->color = RED;
+        InsertFixup(z);
     }
 
     bool Search(Node* node, int data) {
@@ -277,8 +303,13 @@ class RBT {
         return found;
     }
 
+    void Delete(Node* node, int data) {
+        if (Search(node, data)) {    
+            Node *target = SearchForDelete(node, data);
+            DeleteNode(target);
+        }
+    }
 };
-
 
 
 int main() {
@@ -318,21 +349,21 @@ int main() {
     rbt.Insert(x);
 
     // 2:b(1:b)(5:r(3:b()(4:r))(7:b))
-    // insert, search works
-    // gotta implement delete
+    // insert, search, delete works
 
     cout << "ended\n";
-    if (rbt.Search(rbt.root, 10))
+    if (rbt.Search(rbt.getRoot(), 10))
         cout << "found\n";
     else
         cout << "not found\n";
 
-    if (rbt.Search(rbt.root, 5))
+
+    if (rbt.Search(rbt.getRoot(), 5))
         cout << "found\n";
     else 
         cout << "not found\n";
 
-    rbt.Print(rbt.root);
+    rbt.Print(rbt.getRoot());
 
 }
 
