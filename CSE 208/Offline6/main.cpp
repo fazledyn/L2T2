@@ -9,46 +9,51 @@ class Node {
     public:
     int color, key;
     Node *left, *right, *parent;
+
+    void print(string name)  {
+        cout << name << endl;
+        cout << " ------------------ " << endl;
+        cout << "color: " << color << endl;
+        cout << "node: " << key << endl;
+        cout << "node-left: " << left->key << endl;
+        cout << "node-right: " << right->key << endl;
+        cout << " ------------------ " << endl;
+    }
 };
 
 class RBT {
-
     Node *root, *nil;
 
     void LeftRotate(Node* x) {
         Node *y = x->right;
-
         x->right = y->left;
         y->left->parent = x;
-
         y->parent = x->parent;
 
         if (x->parent == nil)
             root = y;
         else if (x == x->parent->left)
             x->parent->left = y;
-        else 
+        else
             x->parent->right = y;
-        
+
         y->left = x;
         x->parent = y;
     }
-    
+
     void RightRotate(Node* x) {
         Node *y = x->left;
-
         x->left = y->right;
         y->right->parent = x;
-
         y->parent = x->parent;
 
         if (x->parent == nil)
             root = y;
         else if (x == x->parent->right)
             x->parent->right = y;
-        else 
+        else
             x->parent->left = y;
-        
+
         y->right = x;
         x->parent = y;
     }
@@ -99,6 +104,7 @@ class RBT {
     }
 
     Node* DeleteNode(Node* z) {
+
         Node *y;
         if ((z->left == nil) || (z->right == nil)) {
             y = z;
@@ -108,13 +114,15 @@ class RBT {
         }
 
         Node *x;
-        if (y->left != nil)
+        x = nil;
+        if (y->left->key != NIL_KEY) {
             x = y->left;
-        else
+        }
+        else if (y->right->key != NIL_KEY) {
             x = y->right;
+        }
 
         x->parent = y->parent;
-
         if (y->parent == nil) {
             root = x;
         }
@@ -125,9 +133,9 @@ class RBT {
             y->parent->right = x;
         }
 
-        if ( y != z) 
+        if ( y != z)
             z->key = y->key;
-        
+
         if (y->color == BLACK)
             DeleteFixup(x);
 
@@ -136,22 +144,23 @@ class RBT {
 
     void DeleteFixup(Node *x) {
         while ( (x->color == BLACK) && (x != root) ) {
-            if (x == x->parent->left){
+
+            if (x == x->parent->left) {
                 Node *w = x->parent->right;
+
                 if (w->color == RED) {
                     w->color = BLACK;
                     x->parent->color = RED;
                     LeftRotate(x->parent);
                     w = x->parent->right;
                 }
-                
+
                 if ( (w->left->color == BLACK) && (w->right->color == BLACK) ) {
                     w->color = RED;
                     x = x->parent;
                 }
                 else {
-
-                    if (w->right->color == BLACK) {
+                    if (w->right->color == BLACK && w->right != nil) {
                         w->left->color = BLACK;
                         w->color = RED;
                         RightRotate(w);
@@ -164,33 +173,35 @@ class RBT {
                     x = root;
                 }
             }
-            else {
+            else if (x == x->parent->right) {
                 Node *w = x->parent->left;
+
                 if (w->color == RED) {
                     w->color = BLACK;
                     x->parent->color = RED;
                     RightRotate(x->parent);
                     w = x->parent->left;
                 }
-                
+
                 if ( (w->right->color == BLACK) && (w->left->color == BLACK) ) {
                     w->color = RED;
                     x = x->parent;
                 }
                 else {
-
-                    if (w->left->color == BLACK) {
+                    if (w->left->color == BLACK && w->left != nil) {
                         w->right->color = BLACK;
                         w->color = RED;
                         LeftRotate(w);
                         w = x->parent->left;
                     }
+
                     w->color = x->parent->color;
                     x->parent->color = BLACK;
                     w->left->color = BLACK;
                     RightRotate(x->parent);
                     x = root;
                 }
+
             }
         }
         x->color = BLACK;
@@ -218,7 +229,7 @@ class RBT {
     Node* SearchForDelete(Node* node, int data) {
         if (node->key == data){
             return node;
-        } 
+        }
         else if (node->key > data) {
             if (node->left != nil)
                 return SearchForDelete(node->left, data);
@@ -237,6 +248,9 @@ class RBT {
 
         nil->color = BLACK;
         nil->key = NIL_KEY;
+        nil->parent = nullptr;
+        nil->left = nullptr;
+        nil->right = nullptr;
         root = nil;
     }
 
@@ -245,13 +259,12 @@ class RBT {
     }
 
     void Print(Node *x) {
-
         if (x != nil) {
             cout << x->key << ":";
             if (x->color == BLACK)  cout << "b";
             else                    cout << "r";
 
-            if ((x->left != nil) || (x->right != nil)) {    
+            if ((x->left != nil) || (x->right != nil)) {
                 cout << "(";
                 Print(x->left);
                 cout << ")" << "(";
@@ -273,13 +286,13 @@ class RBT {
                 x = x->right;
         }
         z->parent = y;
-        if (y == nil) 
+        if (y == nil)
             root = z;
         else if (z->key < y->key)
             y->left = z;
-        else 
+        else
             y->right = z;
-        
+
         z->left = nil;
         z->right = nil;
         z->color = RED;
@@ -288,11 +301,10 @@ class RBT {
 
     bool Search(Node* node, int data) {
         bool found = false;
-        //cout << "key: " << node->key << endl;
         if (node == nil)
             return found;
 
-        if (node->key == data) 
+        if (node->key == data)
             found = true;
         else if (node->key > data) {
             if (node->left != nil)
@@ -306,7 +318,7 @@ class RBT {
     }
 
     void Delete(Node* node, int data) {
-        if (Search(node, data)) {    
+        if (Search(node, data)) {
             Node *target = SearchForDelete(node, data);
             DeleteNode(target);
         }
