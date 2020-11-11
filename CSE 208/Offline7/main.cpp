@@ -1,10 +1,11 @@
 #include <iostream>
-#include <vector>
 #include <stack>
-#include <assert.h>
+#include <queue>
 using namespace std;
 
 #define INFINITY INT_MAX
+
+
 
 class Node
 {
@@ -265,8 +266,51 @@ public:
         this->BinomialUnion(newHeap);
     }
 
+    void printBinomialTree(Node* head) {
+
+        queue<Node*> q;
+        q.push(head);
+        q.push(nullptr);
+
+        Node* curr;
+        int level = 0;
+        cout << "Level " << level++ << " : ";
+
+        while (q.size() > 1) {
+            curr = q.front();
+            q.pop();
+
+            if (curr == nullptr) {
+                q.push(nullptr);
+                cout << endl;
+                cout << "Level " << level++ << " : ";
+            }
+            else {
+
+                if (curr->child) {
+                    q.push(curr->child);
+                }
+
+                if (curr->child) {
+                    if (curr->child->sibling)
+                        q.push(curr->child->sibling);
+                }
+                cout << curr->key << " ";
+            }
+        }
+    }
 
 
+    void BinomialHeapPrint() {
+
+        Node* curr = head;
+        cout << "Printing Binomial Heap ..." << endl;
+        while (curr != nullptr) {
+            cout << "Binomial Tree, B" << curr->degree << endl;
+            printBinomialTree(curr);
+            curr = curr->sibling;
+        }
+    }
 
 };
 
@@ -286,6 +330,13 @@ int main() {
     node = new Node(4);
     bh.BinomialInsert(node);
 
-    bh.getHead()->print();
-    bh.getHead()->sibling->print();
+    node = new Node(8);
+    bh.BinomialInsert(node);
+
+    //bh.printBinomialTree(bh.getHead());
+
+    bh.BinomialHeapPrint();
+
+
 }
+
