@@ -21,22 +21,17 @@ public:
     }
 };
 
-class BinomialHeap
-{
+class BinomialHeap {
     Node *head;
 
 public:
-    Node *findMinimum()
-    {
-
+    Node *findMinimum() {
         Node *y = nullptr;
         Node *x = head;
         int minimum = INFINITY;
 
-        while (x != nullptr)
-        {
-            if (x->key < minimum)
-            {
+        while (x != nullptr) {
+            if (x->key < minimum) {
                 minimum = x->key;
                 y = x;
             }
@@ -58,12 +53,53 @@ public:
         this->BinomialHeapUnion(newHeap);
     }
 
+    Node* BinomialHeapMerge(BinomialHeap heap) {
+        Node* thisHead = this->head;
+        Node* thatHead = heap.head;
+        Node* newHead = nullptr;
+        Node* tempHead = nullptr;
 
-    void BinomialHeapMerge(BinomialHeap heap) {
+        if (thisHead->degree <= thatHead->degree) {
+            newHead = thisHead;
+            thisHead = thisHead->sibling;
+        }
+        else {
+            newHead = thatHead;
+            thatHead = thatHead->sibling;
+        }
+        tempHead = newHead;
 
-        
+        while (thisHead != nullptr && thatHead != nullptr) {    
+            if (thisHead->degree <= thatHead->degree) {
+                newHead->sibling = thisHead;
+                thisHead = thisHead->sibling;
+            }
+            else {
+                newHead->sibling = thatHead;
+                thatHead = thatHead->sibling;
+            }
+            newHead = newHead->sibling;
+        }
 
+        if (thisHead != nullptr) {
+            while (thisHead != nullptr) {
+                newHead->sibling = thisHead;
+                thisHead = thisHead->sibling;
+                newHead = newHead->sibling;
+            }
+        }
 
+        if (thatHead != nullptr) {
+            while (thatHead != nullptr) {
+                newHead->sibling = thatHead;
+                thatHead = thatHead->sibling;
+                newHead = newHead->sibling;
+            }
+        }
+
+        cout << "\nreturning newHead ..." << endl;
+        cout << "newHead: " << newHead << endl;
+        return newHead;
     }
 
 
@@ -129,7 +165,7 @@ public:
         allSibling.pop();
 
         // resort them to the order
-        while (!allSibling.empty()) {
+        while ( !allSibling.empty() ) {
             child->sibling = allSibling.top();
             allSibling.pop();
             child = child->sibling;
@@ -141,9 +177,9 @@ public:
         newHeap.head = currHead;
 
         this->BinomialHeapUnion(newHeap);
-        
     }
 
+    
 
 
 };
