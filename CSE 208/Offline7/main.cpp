@@ -53,9 +53,56 @@ public:
     }
 
     void BinomialInsert(Node* x) {
-        BinomialHeap newheap;
-        newheap.head = x;
-        this->head = BinomialHeapUnion(this, &newheap);
+        BinomialHeap newHeap;
+        newHeap.head = x;
+        this->BinomialHeapUnion(newHeap);
+    }
+
+
+    void BinomialHeapMerge(BinomialHeap heap) {
+
+        
+
+
+    }
+
+
+    void BinomialHeapUnion(BinomialHeap heap) {
+
+        BinomialHeap newHeap;
+        newHeap.head = this->BinomialHeapMerge(heap);
+
+        if (newHeap.head == nullptr) {
+            this->head = newHeap.head;
+        }
+
+        Node* prev = nullptr;
+        Node* x = newHeap.head;
+        Node* next = x->sibling;
+
+        while (next != nullptr) {
+            if ( (x->degree != next->degree) || ((next->sibling != nullptr) && (next->sibling->degree == x->degree)) ) {
+                prev = x;
+                x = next;
+            }
+            else {
+                if (x->key <= next->key) {
+                    x->sibling = next->sibling;
+                    this->BinomialLink(next, x);
+                }
+                else {
+                    if (prev == nullptr) {
+                        this->head = next;
+                    }
+                    else {
+                        prev->sibling = next;
+                    }
+                    this->BinomialLink(x, next);
+                    x = next;
+                }
+            }
+            next = x->sibling;
+        }
     }
 
     void ExtractMin() {
@@ -90,6 +137,10 @@ public:
         child->sibling = nullptr;
         // now final child, previoud first child
 
+        BinomialHeap newHeap;
+        newHeap.head = currHead;
+
+        this->BinomialHeapUnion(newHeap);
         
     }
 
