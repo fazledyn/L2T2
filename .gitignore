@@ -1,3 +1,4 @@
-.exe
+*.exe
 /tests
-.out
+*.out
+*.o

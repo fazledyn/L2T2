@@ -1,10 +1,27 @@
 #include <iostream>
 #include <stack>
 #include <queue>
+#include <sstream>
+#include <limits>
+#include <vector>
+
 using namespace std;
 
 #define INFINITY INT_MAX
 
+
+int fact(int n) 
+{ 
+    int res = 1; 
+    for (int i = 2; i <= n; i++) 
+        res = res * i; 
+    return res; 
+} 
+
+int nCr(int n, int r) 
+{ 
+    return fact(n) / (fact(r) * fact(n - r)); 
+} 
 
 
 class Node
@@ -59,7 +76,11 @@ public:
         return this->head;
     }
 
-    Node *findMinimum()
+    void setHead(Node* headNode) {
+        this->head = headNode;
+    }
+
+    Node* findMinimum()
     {
         Node *y = nullptr;
         Node *x = head;
@@ -117,7 +138,7 @@ public:
 
     void BinomialDelete(Node *x)
     {
-        BinomialDecreaseKey(x, -INFINITY);
+        BinomialDecreaseKey(x, -(INFINITY - 100));
         BinomialExtractMin();
     }
 
@@ -179,20 +200,16 @@ public:
                 newHead = newHead->sibling;
             }
         }
-
         this->head = storeHead;
     }
 
 
     void BinomialUnion(BinomialHeap heap) {
-
         BinomialHeapMerge(heap);
 
-/*
-        if (this->head == nullptr) {
-            return;
-        }
-*/
+        // if (this->head == nullptr) {
+        //     return;
+        // }
 
         Node* prev = nullptr;
         Node* curr = this->head;
@@ -225,10 +242,31 @@ public:
         }
     }
 
-    void BinomialExtractMin()
+    int BinomialExtractMin()
     {
         Node *minNode = findMinimum();
         Node *child = minNode->child;
+        int extractMinKey = minNode->key;
+
+        // search kore link change korsi
+        Node* iterNode = head;
+        while (iterNode != nullptr) {
+            if (iterNode->sibling == minNode) {
+                iterNode->sibling = minNode->sibling;
+                break;
+            }
+            else if ((head == minNode) && (iterNode->sibling != nullptr)) {
+                this->head = iterNode->sibling;
+                cout << __LINE__ << endl;
+                return extractMinKey;
+            }
+            else if ((iterNode == minNode) && (iterNode->sibling == nullptr)) {
+                head = nullptr;
+                break;
+            }
+            iterNode = iterNode->sibling;
+        }
+        //bsdk cormen
 
         // Parent Null kore
         while (child != nullptr)
@@ -238,7 +276,7 @@ public:
         }
 
         child = minNode->child;
-        stack<Node *> allSibling;
+        stack<Node*> allSibling;
 
         while (child != nullptr)
         {
@@ -246,97 +284,120 @@ public:
             child = child->sibling;
         }
 
-        Node *currHead = allSibling.top();
-        child = currHead;
+        Node* currHead = allSibling.top();
+        Node* headStore = currHead;
         allSibling.pop();
 
         // resort them to the order
         while (!allSibling.empty())
         {
-            child->sibling = allSibling.top();
+            currHead->sibling = allSibling.top();
             allSibling.pop();
-            child = child->sibling;
+            currHead = currHead->sibling;
         }
-        child->sibling = nullptr;
+
+        currHead->sibling = nullptr;
         // now final child, previoud first child
 
-        BinomialHeap newHeap;
-        newHeap.head = currHead;
+        BinomialHeap h;
+        h.setHead(headStore);
+        BinomialUnion(h);
 
-        this->BinomialUnion(newHeap);
+        return extractMinKey;
     }
-
-    void printBinomialTree(Node* head) {
-
-        queue<Node*> q;
-        q.push(head);
-        q.push(nullptr);
-
-        Node* curr;
-        int level = 0;
-        cout << "Level " << level++ << " : ";
-
-        while (q.size() > 1) {
-            curr = q.front();
-            q.pop();
-
-            if (curr == nullptr) {
-                q.push(nullptr);
-                cout << endl;
-                cout << "Level " << level++ << " : ";
-            }
-            else {
-
-                if (curr->child) {
-                    q.push(curr->child);
-                }
-
-                if (curr->child) {
-                    if (curr->child->sibling)
-                        q.push(curr->child->sibling);
-                }
-                cout << curr->key << " ";
-            }
-        }
-    }
-
 
     void BinomialHeapPrint() {
+		Node* currPtr = head;
+        cout << "Printing Binomial Heap..." << endl;
 
-        Node* curr = head;
-        cout << "Printing Binomial Heap ..." << endl;
-        while (curr != nullptr) {
-            cout << "Binomial Tree, B" << curr->degree << endl;
-            printBinomialTree(curr);
-            curr = curr->sibling;
-        }
-    }
+		while (currPtr != nullptr) {
+            int degree = currPtr->degree;
+			cout<<"Binomial Tree, B" << degree << endl;
 
+			queue<Node*> q;
+			q.push(currPtr);
+            int level = 0, count = 0, prev_count = 0;
+
+            cout << "Level " << level << " : ";
+			while (!q.empty()) {
+				Node* p = q.front();
+				q.pop();
+
+                if (count == nCr(degree, level) + prev_count) {
+                    cout << endl;
+                    prev_count = nCr(degree, level) + prev_count;
+                    level++;
+                    cout << "Level " << level << " : ";
+                }
+
+                cout << p->key << " ";
+                count++;
+
+				if (p->child != nullptr) {
+					Node* tempPtr = p->child;
+					while (tempPtr != nullptr) {
+						q.push(tempPtr);
+						tempPtr = tempPtr->sibling;
+					}
+                }
+			}
+			currPtr = currPtr->sibling;
+			cout << endl;
+		}
+	}
 };
 
 
-
 int main() {
+    freopen("input.txt", "r", stdin);
+    freopen("output.txt", "w", stdout);
 
     BinomialHeap bh;
     Node* node;
 
-    node = new Node(2);
-    bh.BinomialInsert(node);
+    string input;
+    while (getline(cin, input)) {
+        char first_letter;
+        {
+            istringstream iss(input);
+            iss >> first_letter;
 
-    node = new Node(5);
-    bh.BinomialInsert(node);
+            if (first_letter == 'P') {
+                // nor argument
+                bh.BinomialHeapPrint();
+            }
+            else if (first_letter == 'F') {
+                node = bh.findMinimum();
+                cout << "FindMin returned " << node->key << endl;
+            }
+            else if (first_letter == 'E') {
+                int key = bh.BinomialExtractMin();
+                cout << "ExtractMin returned " << key << endl;
+            }
+            else if (first_letter == 'U') {
+                // var
+                int number;
+                vector <int> numbers;
+                while (iss >> number) {
+                    numbers.push_back(number);
+                }
 
-    node = new Node(4);
-    bh.BinomialInsert(node);
-
-    node = new Node(8);
-    bh.BinomialInsert(node);
-
-    //bh.printBinomialTree(bh.getHead());
-
-    bh.BinomialHeapPrint();
-
-
+                BinomialHeap heap;
+                for (int num:numbers) {
+                    node = new Node;
+                    node->key = num;
+                    heap.BinomialInsert(node);            
+                }
+                bh.BinomialUnion(heap);
+            }
+            else if (first_letter == 'I') {
+                int number;
+                iss >> number;
+                node = new Node;
+                node->key = number;
+                bh.BinomialInsert(node);
+            }
+        }
+    }
 }
 
