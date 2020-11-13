@@ -2,3 +2,5 @@
 /tests
 *.out
 *.o
+/.vscode
+/**/.vscode
