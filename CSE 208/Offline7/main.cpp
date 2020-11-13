@@ -341,7 +341,7 @@ int main() {
                 cout << "FindMin returned " << node->key << endl;
             } else if (first_letter == 'E') {
                 int key = bh.extractMin();
-                cout << "extractMin returned " << key << endl;
+                cout << "ExtractMin returned " << key << endl;
             } else if (first_letter == 'U') {
                 int number;
                 vector<int> numbers;
