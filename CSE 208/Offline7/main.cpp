@@ -1,5 +1,5 @@
 #include <iostream>
-#include <limits>
+#include <climits>
 #include <queue>
 #include <sstream>
 #include <stack>
@@ -8,6 +8,7 @@
 using namespace std;
 
 #define INFINITY INT_MAX
+#define GARBAGE	-999999999
 
 /*
     Helper Functions for calculating nCr for Pascal's Triangle
@@ -86,13 +87,7 @@ class BinomialHeap {
     }
 
     void heapMerge(BinomialHeap heap) {
-        /*
-            thisHead >>>>>> this Binomial Heap's head
-            thatHead >>>>>> the second Heap's head
-            the newHead is used as a pointer for the new heap during construction
-            storeHead is used to backup the final HEAD POINTER
-        */
-
+        
         Node *thisHead = this->head;
         Node *thatHead = heap.head;
         Node *newHead = nullptr;
@@ -190,25 +185,43 @@ class BinomialHeap {
 
     int extractMin() {
         Node *minNode = findMinimum();
+
+	if (minNode == nullptr) return GARBAGE;
+
         Node *child = minNode->child;
         int extractMinKey = minNode->key;
-
-        // search kore linkTree change korsi
         Node *iterNode = head;
-        while (iterNode != nullptr) {
-            if (iterNode->sibling == minNode) {
-                iterNode->sibling = minNode->sibling;
-                break;
-            } else if ((head == minNode) && (iterNode->sibling != nullptr)) {
-                this->head = iterNode->sibling;
-                return extractMinKey;
-            } else if ((iterNode == minNode) && (iterNode->sibling == nullptr)) {
-                head = nullptr;
-                break;
-            }
-            iterNode = iterNode->sibling;
-        }
-        //bsdk cormen
+	
+	cout << __LINE__ << endl;
+
+	if (minNode == head) {
+		if (minNode->child != nullptr && minNode->sibling != nullptr){
+			head = minNode->sibling;
+		}
+		else if (minNode->child != nullptr && minNode->sibling == nullptr) {
+			head = nullptr;
+		}
+		else if (minNode->child == nullptr && minNode->sibling != nullptr) {
+			head = minNode->sibling;
+			return minNode->key;
+		}
+		else if (minNode->child == nullptr && minNode->sibling == nullptr) {
+			head = nullptr;
+			return minNode->key;
+		}
+	}
+
+	cout << __LINE__ << endl;
+	
+	if (minNode != head) {
+	        while (iterNode != nullptr) {
+	           	if (iterNode->sibling == minNode) {
+	                	iterNode->sibling = minNode->sibling;
+			}
+	            	iterNode = iterNode->sibling;
+	        }
+	}
+        //bhosdike cormen
 
         // Parent Null kore
         while (child != nullptr) {
@@ -336,13 +349,21 @@ int main() {
 
             if (first_letter == 'P') {
                 bh.heapPrint();
-            } else if (first_letter == 'F') {
+            }
+            else if (first_letter == 'F') {
                 node = bh.findMinimum();
-                cout << "FindMin returned " << node->key << endl;
-            } else if (first_letter == 'E') {
-                int key = bh.extractMin();
-                cout << "ExtractMin returned " << key << endl;
-            } else if (first_letter == 'U') {
+		if (node == nullptr)
+			cout << "The heap is empty !" << endl;
+		else
+                	cout << "FindMin returned " << node->key << endl;
+            }
+            else if (first_letter == 'E') {
+                if (bh.findMinimum()) {
+                    int key = bh.extractMin();
+                    cout << "ExtractMin returned " << key << endl;
+                }
+            }
+            else if (first_letter == 'U') {
                 int number;
                 vector<int> numbers;
                 while (iss >> number) {
@@ -356,7 +377,9 @@ int main() {
                     heap.insert(node);
                 }
                 bh.Union(heap);
-            } else if (first_letter == 'I') {
+
+            }
+            else if (first_letter == 'I') {
                 int number;
                 iss >> number;
                 node = new Node;
