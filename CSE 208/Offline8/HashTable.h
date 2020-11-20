@@ -68,6 +68,7 @@ class PairNode {
 class HashTable {
 
     vector<PairNode> *table;
+    bool *elementWasHere;
 
     int PREVIOUS_PRIME, NEXT_PRIME, TABLE_SIZE;
     int collisionCounter, probeCounter;
@@ -102,6 +103,11 @@ public:
 
         TABLE_SIZE = NEXT_PRIME;
         table = new vector<PairNode>[TABLE_SIZE];
+        elementWasHere = new bool[TABLE_SIZE];
+
+        for (int i=0; i < TABLE_SIZE; i++) {
+            elementWasHere[i] = false;
+        }
 
         collisionCounter = 0;
         probeCounter = 0;
@@ -163,7 +169,7 @@ public:
         int i = 0;
         u64 hash_index = doubleHash(hashFunc, key, i);
 
-        if (table[hash_index].empty()) {
+        if (table[hash_index].empty() && !elementWasHere[hash_index]) {
             return NULL_VALUE;
         }
         else {
@@ -176,7 +182,8 @@ public:
                 i++;
                 hash_index = doubleHash(hashFunc, key, i);
 
-                if (table[hash_index].empty()) {
+                // if any element wasn't there and the place is empty, then break it
+                if (table[hash_index].empty() && !elementWasHere[hash_index]) {
                     break;
                 }
             }
@@ -193,6 +200,8 @@ public:
             //cout << "index: " << hash_index << endl;
             if (table[hash_index].empty()) {
                 table[hash_index].push_back(PairNode(key, value));
+                elementWasHere[hash_index] = true;
+                // the element is here now
                 //cout << "inserted" << endl;
                 break;
             }
@@ -210,16 +219,18 @@ public:
         while (true) {
             hash_index = doubleHash(hashFunc, key, i);
 
-            if (table[hash_index].empty()) {
+            if (table[hash_index].empty() && !elementWasHere[hash_index]) {
                 cout << "The doesn't exists in hash table. Unable to delete" << endl;
                 break;
             }
             else {
-                if (table[hash_index].at(0).key == key) {
-                    table[hash_index].erase(table[hash_index].begin());
-                    cout << "The key has been delete from hash table" << endl;
-                    break;
-                }
+                if (table[hash_index].size() > 0) {
+                    if (table[hash_index].at(0).key == key) {
+                        table[hash_index].erase(table[hash_index].begin());
+                        cout << "The key has been delete from hash table" << endl;
+                        break;
+                    }
+                }                
                 i++;
             }
         }
@@ -235,7 +246,7 @@ public:
         int i = 0;
         u64 hash_index = customProbHash(hashFunc, key, i);
 
-        if (table[hash_index].empty()) {
+        if (table[hash_index].empty() && !elementWasHere[hash_index]) {
             return NULL_VALUE;
         }
         else {
@@ -248,7 +259,7 @@ public:
                 i++;
                 hash_index = customProbHash(hashFunc, key, i);
 
-                if (table[hash_index].empty()) {
+                if (table[hash_index].empty() && !elementWasHere[hash_index]) {
                     break;
                 }
             }
@@ -266,6 +277,7 @@ public:
 
             if (table[hash_index].empty()) {
                 table[hash_index].push_back(PairNode(key, value));
+                elementWasHere[hash_index] = true;
                 //cout << "inserted:2" << endl;
                 break;
             }
@@ -283,15 +295,17 @@ public:
         while (true) {
             hash_index = customProbHash(hashFunc, key, i);
 
-            if (table[hash_index].empty()) {
+            if (table[hash_index].empty() && !elementWasHere[hash_index]) {
                 cout << "The doesn't exists in hash table. Unable to delete" << endl;
                 break;
             }
             else {
-                if (table[hash_index].at(0).key == key) {
-                    table[hash_index].erase(table[hash_index].begin());
-                    cout << "The key has been delete from hash table" << endl;
-                    break;
+                if (table[hash_index].size() > 0) {    
+                    if (table[hash_index].at(0).key == key) {
+                        table[hash_index].erase(table[hash_index].begin());
+                        cout << "The key has been delete from hash table" << endl;
+                        break;
+                    }
                 }
                 i++;
             }
