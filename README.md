@@ -8,7 +8,7 @@ Advanced data structures and algorithms for the theory course CSE207 (Data Struc
 - Graph Algorithm I (Dijkstra, Bellman Ford)
 - Graph Algorithm II (Johnson's, Floyd Warshall)
 - Minimum Spanning Tree
-- Graph Algorithm III
+- Graph Algorithm III (Maximum Bipartite Matching, Maxflow Mincut Theorem)
 - Red Black Tree
 - Binomial Heap
 - Hashtable (Chain Hashing, Double Hashing, Custom Probing)
