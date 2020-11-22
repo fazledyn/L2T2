@@ -15,4 +15,4 @@ Advanced data structures and algorithms for the theory course CSE207 (Data Struc
 
 #### Resources
 - [Zarif's blog on RBT](https://zarif98sjs.github.io/blog/blog/redblacktree/)
-- [My HashTable Implementation]()
+- [My HashTable Implementation](https://fazledyn.github.io/posts/hashtable-implementation/)
