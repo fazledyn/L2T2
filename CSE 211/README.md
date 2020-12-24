@@ -1,7 +1,6 @@
 ## Turing Machine Simulation
 
-### Simulator Used
-[Tursi](https://schaetzc.github.io/tursi/)
+#### Simulator Used: [Tursi](https://schaetzc.github.io/tursi/)
 
 ### Problem 1
 Design Turing machines for the following languages: "The set of strings with an equal number of 0’s and 1’s"
